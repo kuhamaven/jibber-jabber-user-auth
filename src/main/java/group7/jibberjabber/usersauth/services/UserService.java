@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -34,10 +32,6 @@ UserService {
         return ReduceUserDto.toDto(user);
     }
 
-    public List<User> findAllByEmail(String email) {
-        return this.userRepository.findAllByEmail(email);
-    }
-
     public UserListingDto findAll() {
         List<User> users = this.userRepository.findAll();
         return UserListingDto.toDto(users);
@@ -52,14 +46,9 @@ UserService {
     public boolean validUser(UserRegisterDto userDto) {
         String passwordRegex = "^(?=.*\\d)(?=.*[a-zA-Z])([a-zA-Z0-9]+){8,}$";
         String emailRegex = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-        if (StringUtils.isEmpty(userDto.getFirstName())) return false;
-        if (StringUtils.isEmpty(userDto.getLastName())) return false;
-        if (StringUtils.isEmpty(userDto.getDni())) return false;
-        if (StringUtils.isEmpty(userDto.getUsername())) return false;
-        if (userDto.getBirthDate() == null || userDto.getBirthDate().isAfter(LocalDate.now())) return false;
-        if (StringUtils.isEmpty(userDto.getPassword()) || !userDto.getPassword().matches(passwordRegex))
-            return false;
-        return (!StringUtils.isEmpty(userDto.getEmail()) && userDto.getEmail().matches(emailRegex));
+        if (userDto.getUsername().isEmpty()) return false;
+        if (!userDto.getPassword().matches(passwordRegex)) return false;
+        return (userDto.getEmail().matches(emailRegex));
     }
 
     public ReduceUserDto registerUser(UserRegisterDto userRegisterDto) {
@@ -67,6 +56,8 @@ UserService {
             throw new BadRequestException("¡Por favor, verifique los datos enviados!");
         if (usernameExists(userRegisterDto.getUsername()))
             throw new BadRequestException("¡El nombre de usuario ingresado no está disponible!");
+        if (emailExists(userRegisterDto.getEmail()))
+            throw new BadRequestException("¡El email ingresado ya está en uso!");
         User savedUser = saveUser(userRegisterDto);
         return ReduceUserDto.toDto(savedUser);
     }
@@ -74,6 +65,8 @@ UserService {
     public boolean usernameExists(String userName) {
         return this.userRepository.findByUsername(userName).isPresent();
     }
+
+    public boolean emailExists(String email){return this.userRepository.findByEmail(email).isPresent(); }
 
     public boolean userExists(String id) {
         return this.userRepository.findById(id).isPresent();

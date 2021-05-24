@@ -12,7 +12,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
 
     Optional<User> findById(String id);
 
-    List<User> findAllByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     List<User> findAll();
 

@@ -29,21 +29,19 @@ public class UserController {
         return userService.findUserById(id);
     }
 
-    @GetMapping("/family/{email}")
-    public ResponseEntity<List<User>> getAllByEmail(@PathVariable String email) {
-        //TODO Cambiar para seguir las estructuras de los otros endpoints
-        return new ResponseEntity<>(this.userService.findAllByEmail(email), HttpStatus.OK);
-    }
-
     @GetMapping()
     public UserListingDto getUsers() {
         return this.userService.findAll();
     }
 
     @GetMapping("/available/{username}")
-    public ResponseEntity<Boolean> isUsernameAvailable(@PathVariable String username) {
-        //TODO Cambiar para seguir las estructuras de los otros endpoints
-        return new ResponseEntity<>(!this.userService.usernameExists(username), HttpStatus.OK);
+    public Boolean isUsernameAvailable(@PathVariable String username) {
+        return !this.userService.usernameExists(username);
+    }
+
+    @GetMapping("/available/{email}")
+    public Boolean isEmailAvailable(@PathVariable String email) {
+        return !this.userService.emailExists(email);
     }
 
     @PostMapping("/register")

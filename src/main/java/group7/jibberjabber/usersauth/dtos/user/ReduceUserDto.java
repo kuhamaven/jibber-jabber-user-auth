@@ -12,11 +12,13 @@ public class ReduceUserDto {
 
     private String id;
 
-    private String firstName;
+    private String nick;
 
-    private String lastName;
+    private String username;
+
+    private String email;
 
     public static ReduceUserDto toDto(User user) {
-        return new ReduceUserDto(user.getId(), user.getFirstName(), user.getLastName());
+        return new ReduceUserDto(user.getId(), user.getNick(), user.getUsername(), user.getEmail());
     }
 }
