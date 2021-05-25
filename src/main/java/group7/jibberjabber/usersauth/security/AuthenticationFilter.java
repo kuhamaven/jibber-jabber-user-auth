@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -48,8 +49,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         Date exp = new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME);
         Claims claims = Jwts.claims().setSubject(((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername());
         String token = Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512,SecurityConstants.KEY.getBytes()).setExpiration(exp).compact();
-        res.getWriter().write(token);
+        Cookie sessionCookie = new Cookie( SecurityConstants.HEADER_NAME, token);
+        StringBuilder c = new StringBuilder(64+sessionCookie.getValue().length());
+        c.append(sessionCookie.getName()+"="+sessionCookie.getValue());
+//        c.append("; Secure");
+        c.append("; SameSite=Strict; HttpOnly");
+        res.addHeader("Set-Cookie",c.toString());
         res.getWriter().flush();
-
     }
 }
