@@ -12,17 +12,17 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  api:
-    container_name: api-posts
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - 8001:8080
-    env_file:
-      - .env.production
-    depends_on:
-      - db
+#  api:
+#    container_name: api-posts
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.dev
+#    ports:
+#      - 8001:8080
+#    env_file:
+#      - .env.production
+#    depends_on:
+#      - db
 
 volumes:
   pgdata:

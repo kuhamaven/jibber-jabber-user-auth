@@ -1,8 +1,6 @@
 package group7.jibberjabber.usersauth.controllers;
 
-import group7.jibberjabber.usersauth.dtos.user.ReduceUserDto;
-import group7.jibberjabber.usersauth.dtos.user.UserListingDto;
-import group7.jibberjabber.usersauth.dtos.user.UserRegisterDto;
+import group7.jibberjabber.usersauth.dtos.user.*;
 import group7.jibberjabber.usersauth.models.User;
 import group7.jibberjabber.usersauth.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +45,16 @@ public class UserController {
     @PostMapping("/register")
     public ReduceUserDto createUser(@RequestBody UserRegisterDto userDto) {
         return userService.registerUser(userDto);
+    }
+
+    @GetMapping("/currentUser")
+    public LoggedUserDto getLogged(){
+        return userService.getLogged();
+    }
+
+    @PutMapping("/update")
+    public ReduceUserDto updateUser(@RequestBody UpdateUserDto updateUserDto){
+        return userService.updateUser(updateUserDto);
     }
 
 }

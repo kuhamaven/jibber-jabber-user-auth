@@ -31,6 +31,8 @@ public class User {
 
     private String nick;
 
+    private String bio;
+
     public User() {
         active = true;
     }
@@ -41,6 +43,7 @@ public class User {
         this.password = password;
         this.active = true;
         this.nick = nick;
+        this.bio = "";
     }
 
     public static User fromDto(UserRegisterDto userDto){
