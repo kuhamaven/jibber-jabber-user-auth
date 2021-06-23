@@ -1,11 +1,10 @@
 package group7.jibberjabber.usersauth.services;
 
-import group7.jibberjabber.usersauth.dtos.user.ReduceUserDto;
-import group7.jibberjabber.usersauth.dtos.user.UserListingDto;
-import group7.jibberjabber.usersauth.dtos.user.UserRegisterDto;
+import group7.jibberjabber.usersauth.dtos.user.*;
 import group7.jibberjabber.usersauth.exceptions.BadRequestException;
 import group7.jibberjabber.usersauth.models.User;
 import group7.jibberjabber.usersauth.repositories.UserRepository;
+import group7.jibberjabber.usersauth.security.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -72,4 +71,16 @@ UserService {
         return this.userRepository.findById(id).isPresent();
     }
 
+    public LoggedUserDto getLogged() {
+        String user = SessionUtils.getTokenUsername();
+        return new LoggedUserDto(this.userRepository.findByUsername(user).get().getId(),user);
+    }
+
+    public ReduceUserDto updateUser(UpdateUserDto updateUserDto){
+        User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
+        user.setBio(updateUserDto.getBio());
+        user.setNick(updateUserDto.getNick());
+        user = this.userRepository.save(user);
+        return ReduceUserDto.toDto(user);
+    }
 }

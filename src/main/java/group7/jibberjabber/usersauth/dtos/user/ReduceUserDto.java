@@ -18,7 +18,9 @@ public class ReduceUserDto {
 
     private String email;
 
+    private String bio;
+
     public static ReduceUserDto toDto(User user) {
-        return new ReduceUserDto(user.getId(), user.getNick(), user.getUsername(), user.getEmail());
+        return new ReduceUserDto(user.getId(), user.getNick(), user.getUsername(), user.getEmail(), user.getBio());
     }
 }
