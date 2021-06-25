@@ -9,6 +9,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table
@@ -37,6 +39,9 @@ public class User {
         active = true;
     }
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<User> following;
+
     public User(String email, String username, String password, String nick) {
         this.email = email;
         this.username = username;
@@ -44,6 +49,7 @@ public class User {
         this.active = true;
         this.nick = nick;
         this.bio = "";
+        this.following = new HashSet<>();
     }
 
     public static User fromDto(UserRegisterDto userDto){

@@ -57,4 +57,18 @@ public class UserController {
         return userService.updateUser(updateUserDto);
     }
 
+    @PutMapping("/follow/{id}")
+    public ReduceUserDto follow(@PathVariable String id){
+        return userService.follow(id);
+    }
+
+    @PutMapping("/unfollow/{id}")
+    public ReduceUserDto unfollow(@PathVariable String id){
+        return userService.unfollow(id);
+    }
+
+    @GetMapping("/followed")
+    public FollowedDto followed(){
+        return userService.followed();
+    }
 }
