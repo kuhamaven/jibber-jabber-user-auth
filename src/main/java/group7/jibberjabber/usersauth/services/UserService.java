@@ -10,7 +10,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -78,9 +82,35 @@ UserService {
 
     public ReduceUserDto updateUser(UpdateUserDto updateUserDto){
         User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
-        user.setBio(updateUserDto.getBio());
-        user.setNick(updateUserDto.getNick());
+        if(!updateUserDto.getBio().isEmpty())user.setBio(updateUserDto.getBio());
+        if(!updateUserDto.getNick().isEmpty())user.setNick(updateUserDto.getNick());
         user = this.userRepository.save(user);
         return ReduceUserDto.toDto(user);
+    }
+
+    public ReduceUserDto follow(String id) {
+        User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
+        User userToFollow = this.userRepository.findById(id).get();
+        if(user.getFollowing().contains(userToFollow)) return ReduceUserDto.toDto(user);
+        Set<User> following = user.getFollowing();
+        following.add(userToFollow);
+        user.setFollowing(following);
+        return ReduceUserDto.toDto(userRepository.save(user));
+    }
+
+    public ReduceUserDto unfollow(String id) {
+        User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
+        User userToFollow = this.userRepository.findById(id).get();
+        if(!user.getFollowing().contains(userToFollow)) return ReduceUserDto.toDto(user);
+        Set<User> following = user.getFollowing();
+        following.remove(userToFollow);
+        user.setFollowing(following);
+        return ReduceUserDto.toDto(userRepository.save(user));
+    }
+
+    public FollowedDto followed() {
+        User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
+        FollowedDto followed = new FollowedDto(user.getFollowing().stream().map(User::getId).collect(Collectors.toList()));
+        return followed;
     }
 }
