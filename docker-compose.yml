@@ -14,12 +14,12 @@ services:
 
 #  api:
 #    container_name: api-auth
-#    image: jibber-jabber-user-auth_api #Queda buildeada del docker-compose build, eventualmente pusheada en un repo publico.
-##    build:
-##      context: .
-##      dockerfile: dockerfile.dev
+##    image: jibber-jabber-user-auth_api #Queda buildeada del docker-compose build, eventualmente pusheada en un repo publico.
+#    build:
+#      context: .
+#      dockerfile: dockerfile.dev
 #    ports:
-#      - 8002:8080
+#      - 8002:8002
 #    env_file:
 #      - .env.production
 #    depends_on:
