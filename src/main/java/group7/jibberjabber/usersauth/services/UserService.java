@@ -110,7 +110,9 @@ UserService {
 
     public FollowedDto followed() {
         User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
-        FollowedDto followed = new FollowedDto(user.getFollowing().stream().map(User::getId).collect(Collectors.toList()));
+        List<String> list = user.getFollowing().stream().map(User::getId).collect(Collectors.toList());
+        list.add(user.getId());
+        FollowedDto followed = new FollowedDto(list);
         return followed;
     }
 }
