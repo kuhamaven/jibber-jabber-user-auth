@@ -10,10 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,5 +111,10 @@ UserService {
         list.add(user.getId());
         FollowedDto followed = new FollowedDto(list);
         return followed;
+    }
+
+    public ReduceUserDto search(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        return user.map(ReduceUserDto::toDto).orElseGet(ReduceUserDto::new);
     }
 }
