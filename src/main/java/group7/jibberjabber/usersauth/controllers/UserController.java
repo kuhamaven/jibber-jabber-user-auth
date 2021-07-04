@@ -71,4 +71,9 @@ public class UserController {
     public FollowedDto followed(){
         return userService.followed();
     }
+
+    @GetMapping("/search/{username}")
+    public ReduceUserDto search(@PathVariable String username){
+        return userService.search(username);
+    }
 }
