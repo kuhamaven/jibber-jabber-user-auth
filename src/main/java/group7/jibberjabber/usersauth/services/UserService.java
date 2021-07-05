@@ -81,7 +81,13 @@ UserService {
         User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
         if(!updateUserDto.getBio().isEmpty())user.setBio(updateUserDto.getBio());
         if(!updateUserDto.getNick().isEmpty())user.setNick(updateUserDto.getNick());
-        if(!updateUserDto.getPassword().isEmpty())user.setPassword(updateUserDto.getPassword());
+        if(!updateUserDto.getPassword().isEmpty()){
+            String passwordRegex = "^(?=.*\\d)(?=.*[a-zA-Z])([a-zA-Z0-9]+){8,}$";
+            if(updateUserDto.getPassword().matches(passwordRegex)) {
+                user.setPassword(bCryptPasswordEncoder.encode(updateUserDto.getPassword()));
+            }
+            else throw new BadRequestException("Invalid password!");
+        }
         user = this.userRepository.save(user);
         return ReduceUserDto.toDto(user);
     }
