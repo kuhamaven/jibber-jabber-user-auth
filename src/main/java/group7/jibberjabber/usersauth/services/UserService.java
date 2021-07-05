@@ -81,6 +81,7 @@ UserService {
         User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
         if(!updateUserDto.getBio().isEmpty())user.setBio(updateUserDto.getBio());
         if(!updateUserDto.getNick().isEmpty())user.setNick(updateUserDto.getNick());
+        if(!updateUserDto.getPassword().isEmpty())user.setPassword(updateUserDto.getPassword());
         user = this.userRepository.save(user);
         return ReduceUserDto.toDto(user);
     }
