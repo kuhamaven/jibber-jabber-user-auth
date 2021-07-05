@@ -117,4 +117,8 @@ UserService {
         Optional<User> user = userRepository.findByUsername(username);
         return user.map(ReduceUserDto::toDto).orElseGet(ReduceUserDto::new);
     }
+
+    public List<String> wildcard(String search) {
+        return userRepository.findAllByUsernameContaining(search).stream().map(User::getUsername).collect(Collectors.toList());
+    }
 }

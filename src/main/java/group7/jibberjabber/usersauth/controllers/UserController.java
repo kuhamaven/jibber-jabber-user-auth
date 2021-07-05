@@ -76,4 +76,9 @@ public class UserController {
     public ReduceUserDto search(@PathVariable String username){
         return userService.search(username);
     }
+
+    @GetMapping("/wildcard/{search}")
+    public List<String> wildcard(@PathVariable String search){
+        return userService.wildcard(search);
+    }
 }
