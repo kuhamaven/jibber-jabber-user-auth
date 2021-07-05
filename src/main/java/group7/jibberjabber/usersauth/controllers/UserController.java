@@ -78,7 +78,7 @@ public class UserController {
     }
 
     @GetMapping("/wildcard/{search}")
-    public List<String> wildcard(@PathVariable String search){
+    public UserListingDto wildcard(@PathVariable String search){
         return userService.wildcard(search);
     }
 }
