@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,9 +81,9 @@ UserService {
 
     public ReduceUserDto updateUser(UpdateUserDto updateUserDto){
         User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
-        if(!updateUserDto.getBio().isEmpty())user.setBio(updateUserDto.getBio());
-        if(!updateUserDto.getNick().isEmpty())user.setNick(updateUserDto.getNick());
-        if(!updateUserDto.getPassword().isEmpty()){
+        if(!ObjectUtils.isEmpty(updateUserDto.getBio()))user.setBio(updateUserDto.getBio());
+        if(!ObjectUtils.isEmpty(updateUserDto.getNick()))user.setNick(updateUserDto.getNick());
+        if(!ObjectUtils.isEmpty(updateUserDto.getPassword())){
             String passwordRegex = "^(?=.*\\d)(?=.*[a-zA-Z])([a-zA-Z0-9]+){8,}$";
             if(updateUserDto.getPassword().matches(passwordRegex)) {
                 user.setPassword(bCryptPasswordEncoder.encode(updateUserDto.getPassword()));
