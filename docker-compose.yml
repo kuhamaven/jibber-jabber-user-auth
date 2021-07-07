@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  db:
+  jibber-jabber-auth-db:
     container_name: authDB
     image: postgres:12
     restart: always
@@ -12,7 +12,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  api:
+  jibber-jabber-auth-api:
     container_name: api-auth
 #    image: jibber-jabber-user-auth_api #Queda buildeada del docker-compose build, eventualmente pusheada en un repo publico.
     build:
@@ -23,7 +23,7 @@ services:
     env_file:
       - .env.production
     depends_on:
-      - db
+      - jibber-jabber-auth-db
 
 volumes:
   pgdata:
