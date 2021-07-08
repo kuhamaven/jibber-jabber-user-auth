@@ -6,13 +6,21 @@ import group7.jibberjabber.usersauth.models.Following;
 import group7.jibberjabber.usersauth.models.User;
 import group7.jibberjabber.usersauth.repositories.FollowingRepository;
 import group7.jibberjabber.usersauth.repositories.UserRepository;
+import group7.jibberjabber.usersauth.security.SecurityConstants;
 import group7.jibberjabber.usersauth.security.SessionUtils;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -128,5 +136,43 @@ UserService {
 
     public UserListingDto wildcard(String search) {
         return UserListingDto.toDto(userRepository.findAllByUsernameContaining(search));
+    }
+
+    public ReduceUserDto logout(HttpServletRequest req, HttpServletResponse res) {
+        User user = new User();
+        try{
+            user = sessionUtils.getCurrentUser();
+        }catch (BadRequestException e){}
+        if(hasAuthorizationCookie(req.getCookies())){
+            Cookie cookie = null;
+            for( Cookie c : req.getCookies() ){
+                if(SecurityConstants.HEADER_NAME.equals(c.getName())){
+                    cookie = c;
+                    break;
+                }
+            }
+            cookie.setMaxAge(0);
+            cookie.setValue(cookie.getValue()+"EXPIRED");
+            res.addCookie(cookie);
+        }
+        if(ObjectUtils.isEmpty(user.getUsername())) return new ReduceUserDto();
+        return ReduceUserDto.toDto(user);
+    }
+
+
+    private boolean hasAuthorizationCookie(Cookie[] cookies){
+        if(cookies == null || cookies.length<1) return false;
+
+        Cookie sessionCookie = null;
+        for( Cookie cookie : cookies ){
+            if(SecurityConstants.HEADER_NAME.equals(cookie.getName())){
+                sessionCookie = cookie;
+                break;
+            }
+        }
+
+        if(sessionCookie==null) return false;
+
+        return true;
     }
 }
