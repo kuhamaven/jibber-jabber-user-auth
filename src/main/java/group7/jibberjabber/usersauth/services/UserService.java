@@ -2,7 +2,9 @@ package group7.jibberjabber.usersauth.services;
 
 import group7.jibberjabber.usersauth.dtos.user.*;
 import group7.jibberjabber.usersauth.exceptions.BadRequestException;
+import group7.jibberjabber.usersauth.models.Following;
 import group7.jibberjabber.usersauth.models.User;
+import group7.jibberjabber.usersauth.repositories.FollowingRepository;
 import group7.jibberjabber.usersauth.repositories.UserRepository;
 import group7.jibberjabber.usersauth.security.SessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,12 +22,16 @@ public class
 UserService {
 
     private final UserRepository userRepository;
+    private final FollowingRepository followingRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final SessionUtils sessionUtils;
 
     @Autowired
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, FollowingRepository followingRepository) {
         this.userRepository = userRepository;
+        this.followingRepository = followingRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        sessionUtils = new SessionUtils(userRepository);
     }
 
     public ReduceUserDto findUserById(String id) {
@@ -75,12 +80,11 @@ UserService {
     }
 
     public LoggedUserDto getLogged() {
-        String user = SessionUtils.getTokenUsername();
-        return new LoggedUserDto(this.userRepository.findByUsername(user).get().getId(),user);
+        return new LoggedUserDto(sessionUtils.getCurrentUser().getId(),sessionUtils.getCurrentUser().getUsername());
     }
 
     public ReduceUserDto updateUser(UpdateUserDto updateUserDto){
-        User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
+        User user = sessionUtils.getCurrentUser();
         if(!ObjectUtils.isEmpty(updateUserDto.getBio()))user.setBio(updateUserDto.getBio());
         if(!ObjectUtils.isEmpty(updateUserDto.getNick()))user.setNick(updateUserDto.getNick());
         if(!ObjectUtils.isEmpty(updateUserDto.getPassword())){
@@ -95,28 +99,23 @@ UserService {
     }
 
     public ReduceUserDto follow(String id) {
-        User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
-        User userToFollow = this.userRepository.findById(id).get();
-        if(user.getFollowing().contains(userToFollow)) return ReduceUserDto.toDto(user);
-        Set<User> following = user.getFollowing();
-        following.add(userToFollow);
-        user.setFollowing(following);
-        return ReduceUserDto.toDto(userRepository.save(user));
+        User user = sessionUtils.getCurrentUser();
+        if(followingRepository.findByFollowerIdAndFollowingId(user.getId(),id).isPresent()) return ReduceUserDto.toDto(user);
+        followingRepository.save(new Following(user.getId(),id));
+        return ReduceUserDto.toDto(user);
     }
 
     public ReduceUserDto unfollow(String id) {
-        User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
-        User userToFollow = this.userRepository.findById(id).get();
-        if(!user.getFollowing().contains(userToFollow)) return ReduceUserDto.toDto(user);
-        Set<User> following = user.getFollowing();
-        following.remove(userToFollow);
-        user.setFollowing(following);
-        return ReduceUserDto.toDto(userRepository.save(user));
+        User user = sessionUtils.getCurrentUser();
+        if(followingRepository.findByFollowerIdAndFollowingId(user.getId(),id).isEmpty()) return ReduceUserDto.toDto(user);
+        followingRepository.delete(followingRepository.findByFollowerIdAndFollowingId(user.getId(),id).get());
+        return ReduceUserDto.toDto(user);
     }
 
     public FollowedDto followed() {
-        User user = this.userRepository.findByUsername(SessionUtils.getTokenUsername()).get();
-        List<String> list = user.getFollowing().stream().map(User::getId).collect(Collectors.toList());
+        User user = sessionUtils.getCurrentUser();
+        List<Following> following = followingRepository.findAllByFollowerId(user.getId());
+        List<String> list = following.stream().map(Following::getFollowingId).collect(Collectors.toList());
         list.add(user.getId());
         FollowedDto followed = new FollowedDto(list);
         return followed;

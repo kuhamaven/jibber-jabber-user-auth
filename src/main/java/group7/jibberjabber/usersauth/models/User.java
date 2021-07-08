@@ -18,8 +18,8 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid")
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(nullable = false)
     private String id;
 
@@ -39,9 +39,6 @@ public class User {
         active = true;
     }
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<User> following;
-
     public User(String email, String username, String password, String nick) {
         this.email = email;
         this.username = username;
@@ -49,7 +46,7 @@ public class User {
         this.active = true;
         this.nick = nick;
         this.bio = "";
-        this.following = new HashSet<>();
+//        this.following = new HashSet<>();
     }
 
     public static User fromDto(UserRegisterDto userDto){
