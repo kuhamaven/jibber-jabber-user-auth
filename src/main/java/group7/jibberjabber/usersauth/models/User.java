@@ -38,9 +38,6 @@ public class User {
     public User() {
         active = true;
     }
-//
-//    @ManyToMany
-//    private Set<User> following;
 
     public User(String email, String username, String password, String nick) {
         this.email = email;
