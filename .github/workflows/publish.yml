@@ -2,7 +2,7 @@ name: publish
 
 on:
   push:
-    branches: [ dev]
+    branches: [ prod]
 
 jobs:
   publish-image:
@@ -20,5 +20,5 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker build . -f Dockerfile --tag ghcr.io/kuhamaven/jibber-jabber-users-auth_api-dev:latest
-          docker push ghcr.io/kuhamaven/jibber-jabber-users-auth_api-dev:latest
+          docker build . -f Dockerfile --tag ghcr.io/kuhamaven/jibber-jabber-users-auth_api-prod:latest
+          docker push ghcr.io/kuhamaven/jibber-jabber-users-auth_api-prod:latest
