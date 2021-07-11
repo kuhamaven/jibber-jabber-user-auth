@@ -26,7 +26,7 @@ jobs:
       - name: Deploy
         uses: fifsky/ssh-action@master
         with:
-          command: ~/jj/jibber-jabber-infrastructure/start-jibber-jabber-prod.sh
+          command: ~/jibber-jabber-infrastructure/start-jibber-jabber-prod.sh
           host: ${{ secrets.VM_IP_PROD }}
           user: ${{ secrets.VM_USER_PROD }}
           key: ${{ secrets.VM_KEY_PROD }}
