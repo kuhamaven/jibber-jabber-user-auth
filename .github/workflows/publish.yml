@@ -22,3 +22,11 @@ jobs:
         run: |
           docker build . -f Dockerfile --tag ghcr.io/kuhamaven/jibber-jabber-users-auth_api-prod:latest
           docker push ghcr.io/kuhamaven/jibber-jabber-users-auth_api-prod:latest
+
+      - name: Deploy
+        uses: fifsky/ssh-action@master
+        with:
+          command: ~/jj/jibber-jabber-infrastructure/start-jibber-jabber-prod.sh
+          host: ${{ secrets.VM_IP_PROD }}
+          user: ${{ secrets.VM_USER_PROD }}
+          key: ${{ secrets.VM_KEY_PROD }}

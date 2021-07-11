@@ -56,7 +56,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         Cookie sessionCookie = new Cookie( SecurityConstants.HEADER_NAME, token);
         StringBuilder c = new StringBuilder(64+sessionCookie.getValue().length());
         c.append(sessionCookie.getName()+"="+sessionCookie.getValue());
-//        c.append("; Secure");
+        c.append("; Secure");
         c.append("; HttpOnly");
         res.addHeader("Set-Cookie",c.toString());
         res.getWriter().flush();
